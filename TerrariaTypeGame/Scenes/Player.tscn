@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3 uid="uid://dsd7xpwd8fka1"]
+
+[ext_resource type="Script" path="res://Scripts/Patterns/FSM/FSM.gd" id="1_ixqi6"]
+[ext_resource type="Script" path="res://Scripts/Player/MoveState.gd" id="2_sjxpo"]
+[ext_resource type="Script" path="res://Scripts/Player/IdleState.gd" id="3_y70h1"]
+[ext_resource type="Script" path="res://Scripts/Player/MoveKeeper.gd" id="4_dtcfw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ch4c6"]
+
+[node name="Player" type="CharacterBody2D"]
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ch4c6")
+
+[node name="Animation" type="AnimatedSprite2D" parent="."]
+
+[node name="MovementFSM" type="Node" parent="." node_paths=PackedStringArray("_initialState")]
+script = ExtResource("1_ixqi6")
+_initialState = NodePath("MoveState")
+
+[node name="MoveState" type="Node" parent="MovementFSM" node_paths=PackedStringArray("_moveKeeper", "_player")]
+script = ExtResource("2_sjxpo")
+_moveKeeper = NodePath("../StateKeeper")
+_player = NodePath("../..")
+
+[node name="IdleState" type="Node" parent="MovementFSM" node_paths=PackedStringArray("_moveKeeper", "_stateKeeper")]
+script = ExtResource("3_y70h1")
+_moveKeeper = NodePath("../StateKeeper")
+_stateKeeper = NodePath("../StateKeeper")
+
+[node name="StateKeeper" type="Node" parent="MovementFSM" node_paths=PackedStringArray("moveState", "idleState")]
+script = ExtResource("4_dtcfw")
+moveState = NodePath("../MoveState")
+idleState = NodePath("../IdleState")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
